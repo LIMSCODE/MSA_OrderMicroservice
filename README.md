@@ -112,10 +112,69 @@ application.yml에 각 마이크로서비스의 고유이름 정의. 서비스�
 히스트릭스대시보드는 터빈서버에 연결하여 일괄취합된 스트림을 웹화면으로 확인
 l
 
+==================================================
 
+### 프로젝트 실행법
 
+//카프카 kafka_2.13-3.6.0 설치후 테스트
 
+//설치경로로이동후 실행
+cd kafka_2.13-3.6.0
+cd bin
+cd windws
+zookeeper-server-start.bat ../../config/zookeeper.properties
+kafka-server-start.bat ../../config/server.properties
 
+//토픽생성
+kafka-topics.bat --create --topic quickstart-events --bootstrap-server localhost:9092
+(결과)Created topic quickstart-events.
+
+//토픽생성잘됬는지 확인
+kafka-topics.bat --list --bootstrap-server localhost:9092
+
+//프로듀서로 토픽에 이벤트쓰기
+kafka-console-producer.bat --topic quickstart-events --bootstrap-server localhost:9092
+
+//컨슈머로 토픽의 이벤트읽기
+kafka-console-consumer.bat --topic quickstart-events --from-beginning --bootstrap-server localhost:9092
+(입력한값 불러오는것 확인됨)
+
+https://kjchoi.co.kr/24
+=======================================
+//프로젝트오류 - build path, jdk, jre 버전 설정 차이떄문 / 이클립스 프로젝트에서 import - gradle build해줘야함
+//서버실행포트 - 각 프로젝트 7개를 스프링부트로 옮겨서 실행함
+9091 유레카
+9090 줄
+9999 터빈
+9093 히스트릭스
+8080 커피주문
+8081 회원확인
+8082 주문처리상태확인 
+
+//주키퍼 서버가동 (위에있음)
+//카프카 서버가동 (위에있음)
+
+//테이블, 데이터생성 
+(put) http://localhost:9090/coffeeMember/createMemberTable
+(put) http://localhost:9090/coffeeMember/insertMemberData
+//주문처리상태확인
+(put) http://localhost:9090/coffeeStatus/createStatusTable
+
+//포스트맨으로실험(커피주문)
+http://localhost:9090/coffeeOrder/coffeeOrder
+{"id":"","orderNumber":"1","coffeeName":"espresso","coffeeCount":"2","customerName":"kevin"}
+
+//포스트맨으로실험(커피주문상태확인)
+http://localhost:9090/coffeeStatus/coffeeOrderStatus
+{
+    "id": "1",
+    "orderHistory": "{\"id\":\"\",\"orderNumber\":\"1\",\"coffeeName\":\"espresso\",\"coffeeCount\":\"2\",\"customerName\":\"kevin\"}"
+}
+
+//유레카 웹에 켜지는것 확인
+http://localhost:9091/
+//터빈서버
+http://localhost:9999/turbine.stream
 
 
 
